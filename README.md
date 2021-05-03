@@ -8,31 +8,20 @@
 - Python 3.9
 - Poetry ( is included in the docker )
 - Docker
+- MySQL 8.0
 
 
-## development
+## 開発環境構築
+
+[docs/install.md](docs/install.md)
 
 
-### Requirements
-- Docker
+## CLI
 
+### test
 
-### Build dev Docker image & Run
-```
-# Build
-$ docker build -t [YOUR APP NAME]-dev/app docker/
-$ docker run --rm -it -v `pwd`:/usr/src/app [YOUR APP NAME]-dev/app make setup
+```$(docker run app) make test```
 
-# Run
-$ docker run --rm -it -v `pwd`:/usr/src/app [YOUR APP NAME]-dev/app
-```
+### lint
 
-
-## deployment
-
-
-## How to
-
-
-## Troubleshooting
-
+```$(docker run app) make lint```

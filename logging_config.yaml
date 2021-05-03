@@ -1,0 +1,49 @@
+default: &default
+  version: 1
+  formatters:
+    default:
+      format: '[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s'
+  handlers:
+    file:
+      class : logging.FileHandler
+      formatter: default
+      level: INFO
+      filename: /var/log/app/app.log
+      encoding: utf_8
+  root:
+    level: INFO
+    handlers: [file]
+
+production: &production
+  <<: *default
+
+staging:
+  <<: *production
+
+test:
+  <<: *default
+  handlers:
+    console:
+      class : logging.StreamHandler
+      formatter: default
+      level: NOTSET
+  root:
+    level: NOTSET
+    handlers: [console]
+
+development:
+  <<: *default
+  handlers:
+    file:
+      class : logging.FileHandler
+      formatter: default
+      level: INFO
+      filename: log/app.log
+      encoding: utf_8
+    console:
+      class : logging.StreamHandler
+      formatter: default
+      level: NOTSET
+  root:
+    level: NOTSET
+    handlers: [console,file]

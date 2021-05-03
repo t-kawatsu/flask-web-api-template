@@ -1,0 +1,171 @@
+openapi: 3.0.0
+info:
+  title: flask-web-api
+  description: |
+    # Flask WEB API #
+    ---
+    本書は、Flask WEB API
+    の仕様と使い方を記載しています。
+      
+      
+    ## 基本事項 ##
+    ---
+    ### 通信プロトコル ###
+    通信プロトコルは *HTTP/1.1* を使用します。  
+    また、スキーマは https を使用し通信をセキュアにしてください。  
+    
+    ### 文字コード ###
+    通信に使用する文字コードは *UTF-8* です。  
+    リクエストにパラメータが必要な場合は  
+    UTF-8 に変換し URL encode してください。
+    
+    ### レスポンスフォーマット ###
+    レスポンスフォーマットは全て *json* を使用します。  
+    
+    ### レスポンスヘッダ ###
+    - Content-Type: application/json
+    - Cache-Control: no-store
+    - ( Pragma: no-cache )
+    
+    ### エラーコード ###
+    API 接続において何らかのエラーが発生した場合には  
+    エラーの種類に応じた HTTP ステータスコードを返す  
+    ことに加え、レスポンスボディに詳細なエラーコードと  
+    メッセージを返します。
+    
+    ### 接続認証 ###
+    
+    
+  version: "1.0.0"
+
+servers:
+  - url: '{scheme}://localhost/{basePath}'
+    description: Development server
+    variables:
+      scheme:
+        enum:
+          - https
+          - http
+        default: https
+      basePath:
+        default: api/v1
+
+security:
+
+paths:
+  /health:
+    get:
+      summary: サーバーヘルスチェック
+      description: |
+        API サーバーのヘルスチェックを行います。
+        問題無い場合200ステータスコードを返却します。
+      tags:
+        - health
+      operationId: getHealth
+      responses:
+        '200':
+          description: 成功時
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '5XX':
+          $ref: '#/components/responses/5XX'
+  /users/{id}:
+    get:
+      summary: get user data
+      responses:
+        '200':
+          description: 成功時
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/400'
+    parameters:
+      - name: id
+        in: path
+        description: user ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+
+components:
+  schemas:
+    Health:
+      description: APP サーバーヘルスデータ
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          description: ステータス
+          enum:
+            - fine
+      example:
+        status: fine
+    Error:
+      type: object
+      properties:
+        code:
+          description: エラーコード
+          type: string
+        message:
+          description: エラーメッセージ
+          type: string
+  
+  responses:
+    '4XX':
+      description: 不正なリクエスト
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: invalid_request
+            message: "リクエストが不正です。"
+    '401':
+      description: 不正なトークン
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: invalid_token
+            message: "リクエストが不正です。"
+    '404':
+      description: 無効なURL
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: not_found
+            message: "not found"
+    '5XX':
+      description: サーバー内部エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: internal_server_error
+            message: "サーバー側で不明なエラーが発生しました。"
+  
+  securitySchemes:
+    http:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://example.com/api/oauth/dialog
+          tokenUrl: https://example.com/api/oauth/dialog
+          scopes:
+            write: allows modifying resources
+            read: allows reading resources
+

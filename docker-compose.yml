@@ -1,0 +1,44 @@
+version: "3.7"
+services:
+
+  web:
+    build: docker/web
+    ports:
+      # - "80:80"
+      - "443:443"
+    depends_on:
+      - app
+    networks:
+     - default
+
+  app:
+    build: docker/app
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - mysql
+    networks:
+     - default
+    tty: true
+    stdin_open: true
+
+  mysql:
+    build: docker/mysql
+    ports:
+      - "3306:3306"
+    env_file: docker/mysql/.env
+    volumes:
+       - mysql_data:/var/lib/mysql
+    networks:
+     - default
+
+networks:
+  default:
+    # PC上で一意な名前
+    name: flask-web-api
+    driver: bridge
+
+volumes:
+  mysql_data:

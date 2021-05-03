@@ -1,9 +1,14 @@
 # vim:set ft=dockerfile:
 FROM python:3.9
 
-ENV TZ=Asia/Tokyo \
-    LANG=ja_JP.UTF-8 \
-    APP_HOME=/usr/src/app \
+LABEL com.jogoj.service.name="app" \
+      com.jogoj.service.type="app" \
+      version="0.1" \
+      description=""
+
+ENV LANG C.UTF-8
+ENV TZ Asia/Tokyo
+ENV APP_HOME=/usr/src/app \
     HOME=/root
 
 # install poetry
@@ -17,6 +22,6 @@ WORKDIR ${APP_HOME}
 
 # SHELL ["/bin/bash", "-lc"]
 
-# EXPOSE 3000/tcp
+EXPOSE 5000/tcp
 
-# CMD ["python"]
+CMD ["make", "run"]
