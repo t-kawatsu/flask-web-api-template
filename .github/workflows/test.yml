@@ -1,0 +1,45 @@
+name: Test
+
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - 'LISENCE'
+    branches:
+      - 'master'
+      - 'develop'
+      - 'feature/**'
+      - 'bugfix/**'
+      - 'hotfix/**'
+      # - 'release/**'
+
+env:
+  DOCKER_IMAGE_NAME: ${{ github.repository }}
+  DOCKER_WORKDIR: /usr/src/app
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 30 # consider something went wrong if over
+    strategy:
+      fail-fast: true
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build a docker image
+      run: |
+        docker build -t $DOCKER_IMAGE_NAME docker/
+
+    - name: Set up
+      run: |
+        docker run -v `pwd`:$DOCKER_WORKDIR $DOCKER_IMAGE_NAME make setup
+
+    - name: Lint
+      run: |
+        docker run -v `pwd`:$DOCKER_WORKDIR $DOCKER_IMAGE_NAME make lint
+
+    - name: Test
+      run: |
+        docker run -v `pwd`:$DOCKER_WORKDIR $DOCKER_IMAGE_NAME make test

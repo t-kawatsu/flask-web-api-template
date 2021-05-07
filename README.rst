@@ -2,6 +2,8 @@
 flask-web-api-template
 ======================
 
+.. image:: https://github.com/t-kawatsu/flask-web-api-template/actions/workflows/test.yml/badge.svg
+
 This is the template repository for flask web-api applications that are constructed with Docker.
 
 
@@ -12,6 +14,7 @@ Stack
 - Poetry
 - MySQL 8.0
 - Make
+- Github Actions ( CI / CD tool )
 
 
 Requirements
