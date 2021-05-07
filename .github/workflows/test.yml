@@ -14,10 +14,6 @@ on:
       - 'hotfix/**'
       # - 'release/**'
 
-env:
-  DOCKER_IMAGE_NAME: ${{ github.repository }}
-  DOCKER_WORKDIR: /usr/src/app
-
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -28,18 +24,19 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Build a docker image
+    - name: Build
       run: |
-        docker build -t $DOCKER_IMAGE_NAME docker/
+        docker-compose build
+        cp .env.sample .env
 
     - name: Set up
       run: |
-        docker run -v `pwd`:$DOCKER_WORKDIR $DOCKER_IMAGE_NAME make setup
+        docker-compose run app make setup
 
     - name: Lint
       run: |
-        docker run -v `pwd`:$DOCKER_WORKDIR $DOCKER_IMAGE_NAME make lint
+        docker-compose run app make lint
 
     - name: Test
       run: |
-        docker run -v `pwd`:$DOCKER_WORKDIR $DOCKER_IMAGE_NAME make test
+        docker-compose run app make test
