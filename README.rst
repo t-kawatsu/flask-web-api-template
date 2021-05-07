@@ -28,11 +28,17 @@ Development
 -----------
 .. code-block:: bash
 
+  # Build docker image
   $ docker-compose build
 
   $ cp .env.sample .env
 
+  # Set up app
+  $ docker-compose run --rm app make setup
+
+  # Run docker image
   $ docker-compose up
+
 
   # Setup app
   $ make setup
